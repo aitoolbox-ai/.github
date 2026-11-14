@@ -1,0 +1,38 @@
+name: plans (reusable)
+
+# Validates a tool's plans.yaml (single source of truth for prices and limits)
+# against its JSON Schema with ajv.
+on:
+  workflow_call:
+    inputs:
+      plans-file:
+        type: string
+        default: contracts/plans.yaml
+      schema-file:
+        type: string
+        default: contracts/plans.schema.json
+      spec:
+        description: JSON Schema draft passed to ajv (draft7, draft2019, draft2020)
+        type: string
+        default: draft7
+
+permissions:
+  contents: read
+
+jobs:
+  plans:
+    name: validate plans.yaml
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: ajv validate
+        run: >-
+          npx -y -p ajv-cli@5.0.0 -p ajv-formats@3.0.1 ajv validate
+          --spec=${{ inputs.spec }} -c ajv-formats
+          -s "${{ inputs.schema-file }}" -d "${{ inputs.plans-file }}"

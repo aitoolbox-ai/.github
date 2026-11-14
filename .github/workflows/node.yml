@@ -1,0 +1,69 @@
+name: node (reusable)
+
+# npm ci · lint · test · build for one Node project (Vite, Astro, libraries).
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Directory containing package.json and package-lock.json
+        type: string
+        default: "."
+      node-version:
+        type: string
+        default: "22"
+      run-lint:
+        description: Run `npm run lint`
+        type: boolean
+        default: true
+      run-test:
+        description: Run `npm test` (skipped if there is no test script)
+        type: boolean
+        default: true
+      run-build:
+        description: Run `npm run build`
+        type: boolean
+        default: true
+      registry-scope:
+        description: npm scope served from GitHub Packages (e.g. @aitoolbox-ai); empty to disable
+        type: string
+        default: "@aitoolbox-ai"
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  node:
+    name: lint · test · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+          registry-url: ${{ inputs.registry-scope != '' && 'https://npm.pkg.github.com' || '' }}
+          scope: ${{ inputs.registry-scope }}
+
+      - name: npm ci
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lint
+        if: inputs.run-lint
+        run: npm run lint --if-present
+
+      - name: Test
+        if: inputs.run-test
+        run: npm test --if-present
+
+      - name: Build
+        if: inputs.run-build
+        run: npm run build --if-present

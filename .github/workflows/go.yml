@@ -1,0 +1,51 @@
+name: go (reusable)
+
+# gofmt · go vet · go test · go build for one Go module.
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Directory containing go.mod
+        type: string
+        default: "."
+      go-version-file:
+        description: Path (from repo root) to go.mod used to pick the Go version
+        type: string
+        default: ""
+      build-target:
+        description: Package pattern to build
+        type: string
+        default: "./..."
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: gofmt · vet · test · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: ${{ inputs.go-version-file != '' && inputs.go-version-file || format('{0}/go.mod', inputs.working-directory) }}
+          cache-dependency-path: ${{ inputs.working-directory }}/go.sum
+
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then echo "::error::gofmt needed:"; echo "$unformatted"; exit 1; fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test
+        run: go test -race ./...
+
+      - name: go build
+        run: go build ${{ inputs.build-target }}

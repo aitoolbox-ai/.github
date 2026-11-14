@@ -1,0 +1,41 @@
+name: gradle-kmp (reusable)
+
+# Runs Gradle tasks on a Kotlin Multiplatform project through its wrapper.
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Directory containing gradlew
+        type: string
+        default: "mobile"
+      tasks:
+        description: Space-separated Gradle tasks
+        type: string
+        default: "check"
+      java-version:
+        type: string
+        default: "21"
+
+permissions:
+  contents: read
+
+jobs:
+  gradle:
+    name: gradle ${{ inputs.tasks }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Gradle
+        run: ./gradlew --console=plain ${{ inputs.tasks }}
