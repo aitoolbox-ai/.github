@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Mapa de repositorios y decisiones de AIToolbox
+    url: https://github.com/aitoolbox-ai/aitoolbox-platform/tree/main/docs/decisions
+    about: Consulta los ADRs antes de proponer cambios transversales.

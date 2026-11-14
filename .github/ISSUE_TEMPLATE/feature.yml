@@ -1,0 +1,38 @@
+name: Funcionalidad
+description: Nueva funcionalidad o mejora
+title: "[feature] "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción
+      description: Qué se quiere conseguir y por qué.
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Lista verificable (- [ ] ...).
+      value: |
+        - [ ] 
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      multiple: true
+      options: [backend, frontend, marketing, mobile, security, contracts, infra]
+  - type: input
+    id: agente
+    attributes:
+      label: Agente responsable
+      placeholder: "p. ej. contracts-architect, security, marketing, backend-go"
+  - type: checkboxes
+    id: contrato
+    attributes:
+      label: Contrato primero
+      options:
+        - label: Si cruza una frontera, el cambio de contrato (openapi, events, plans.yaml, realm) va antes que la implementación.
