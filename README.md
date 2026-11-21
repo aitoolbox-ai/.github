@@ -16,7 +16,7 @@ Repositorio **público** de la organización `aitoolbox-ai` con:
 |---|---|---|
 | `go.yml` | gofmt + go vet + test + build de un módulo Go | `working-directory`, `go-version-file` |
 | `node.yml` | `npm ci` + lint + test + build (Node, Vite, Astro) | `working-directory`, `node-version`, `run-lint`, `run-test`, `run-build` |
-| `gradle-kmp.yml` | Tareas Gradle de un proyecto Kotlin Multiplatform | `working-directory`, `tasks`, `java-version` |
+| `gradle-kmp.yml` | Tareas Gradle de un proyecto Kotlin Multiplatform | `working-directory`, `tasks`, `java-version`, `github-packages` (expone el token como `NODE_AUTH_TOKEN` solo al paso de Gradle) |
 | `plans.yml` | Valida `plans.yaml` contra su JSON Schema (ajv) | `plans-file`, `schema-file` |
 
 ### Uso
@@ -29,6 +29,7 @@ on:
   pull_request:
 permissions:
   contents: read
+  packages: read   # node.yml y gradle-kmp.yml lo piden (GitHub Packages); sin él, el job no arranca
 jobs:
   backend:
     uses: aitoolbox-ai/.github/.github/workflows/go.yml@main
