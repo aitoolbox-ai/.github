@@ -15,9 +15,18 @@ on:
       java-version:
         type: string
         default: "21"
+      github-packages:
+        description: >-
+          Export GITHUB_TOKEN as NODE_AUTH_TOKEN to the Gradle step only, for builds that download
+          npm packages from GitHub Packages (e.g. @aitoolbox-ai/design-system Kotlin tokens).
+          What the token can do is bounded by the caller's permissions, not by this env
+        type: boolean
+        default: false
 
+# packages: read is only used when github-packages is true; the caller must grant it.
 permissions:
   contents: read
+  packages: read
 
 jobs:
   gradle:
@@ -39,3 +48,5 @@ jobs:
 
       - name: Gradle
         run: ./gradlew --console=plain ${{ inputs.tasks }}
+        env:
+          NODE_AUTH_TOKEN: ${{ inputs.github-packages && secrets.GITHUB_TOKEN || '' }}
