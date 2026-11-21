@@ -17,8 +17,9 @@ on:
         default: "21"
       github-packages:
         description: >-
-          Expose GITHUB_TOKEN as NODE_AUTH_TOKEN to the Gradle step only, for builds that download
-          npm packages from GitHub Packages (e.g. @aitoolbox-ai/design-system Kotlin tokens)
+          Export GITHUB_TOKEN as NODE_AUTH_TOKEN to the Gradle step only, for builds that download
+          npm packages from GitHub Packages (e.g. @aitoolbox-ai/design-system Kotlin tokens).
+          What the token can do is bounded by the caller's permissions, not by this env
         type: boolean
         default: false
 
